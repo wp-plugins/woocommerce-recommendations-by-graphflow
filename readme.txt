@@ -1,9 +1,9 @@
 === WooCommerce Recommendations by Graphflow ===
-Contributors: kloon, woothemes, mlnick
+Contributors: kloon, woothemes, mlnick, graphflow
 Tags: woocommerce, recommendations, products, users, analytics, customers, targeting, marketing
 Requires at least: 3.9
 Tested up to: 4.0.0
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -108,6 +108,10 @@ We strive to make our service as fast and efficient as possible. We power recomm
 
 We do need to collect enough data for our engine to do its work, so it's usually best to give it a few days. To help our engine get off to a good start, we recommend that you export your product details and recent order history to Graphflow, using the `Export` buttons on the Graphflow settings page.
 
+= I've tested the plugin on a development store, how do I migrate over to my live store? =
+
+Currently, we require you to sign up for one account per store. If you have used your access keys for development or testing purposes, please [contact support](http://www.graphflow.com/contact-us/), and we will clear your test data so you can start fresh on your live store.
+
 = My recommendations look strange =
 
 We use state-of-the-art models to generate recommendations for your store. In fact, we give you access to the same powerful technology used by the largest websites and online stores in the world. The recommendations that are shown are created based on the user behaviour in your own store. Sometimes, this behaviour can result in recommendations that you may think look "weird", "odd" or even "wrong". Rest assured that in almost all cases, this is just our models uncovering patterns that are hidden or difficult to find for humans, but that are crystal clear to our powerful engine!
@@ -115,6 +119,12 @@ We use state-of-the-art models to generate recommendations for your store. In fa
 **Note** that sometimes, you may see the "baseline" recommendations that are part of our automatic, built-in split-testing functionality. We hope that the power of our recommendations will be apparent from this split-testing. You can see your recommendation performance by logging in to your Graphflow dashboard.
 
 However, if you do see anything odd or have any questions around our recommendations, please get in touch with us. We're always on the lookout for ways to improve our product (or for bugs or other issues!).
+
+= I've activated the plugin and entered my keys, but I'm not seeing any recommendations =
+
+Our engine needs data to do its work. Customer event data is collected with each customer interaction on your store. You can kick start things by exporting some historical order information to Graphflow, by clicking on the `Export` orders button in the Graphflow settings page.
+
+If you have exported your products and orders, and still don't see any recommendations, please check your error logs and let us know about it, so that we can look into any problems for you.
 
 = The plugin doesn't work! =
 
@@ -125,6 +135,10 @@ If you're experiencing difficulties with installing, configuring or using the pl
 While we aim to make the export process as lightweight and efficient as possible, you may need to ensure you've allocated enough memory to Wordpress to make sure the export works as expected. If you run into problems, you can try to increase the memory allocated (check out this link for more details: http://codex.wordpress.org/Editing_wp-config.php#Increasing_memory_allocated_to_PHP). 
 
 If you can't do this or it doesn't work for any reason, don't worry - we collect your data on the fly with each customer interaction, so we will quickly build up the information we need to power your recommendations.
+
+= I'm seeing both Graphflow recommendations and WooCommerce related products on a page =
+
+Our plugin hooks into standard WooCommerce extension points in order to replace the native related products display with Graphflow recommendations. While this works in general, some themes may have specific ways of displaying related products or up-sell products that work differently. In this case, you will need to disable the related product / up-sell display manually within the theme. If you come across this issue, please [contact support](http://www.graphflow.com/contact-us/) and let us know, and we will do our best to help you get this done.
 
 = What analytics does Graphflow offer? =
 
@@ -145,13 +159,24 @@ Thank you! Please tell your friends. We also welcome all your feedback, good or 
 3. An example of personalized User Recommendations on a Product Category page.
 4. An example of Similar Products on a product detail page.
 5. An example of Cart Recommendations.
+6. Graphflow's event monitor gives you a birds-eye view of what's going on in your store ...
+7. ... while the explorer dashboard provides detailed insight into activity for each individual product and customer
 
 == Changelog ==
+
+= 1.0.1 =
+* Minor fix to error handling when no data has been sent to Graphflow yet
+* Added some FAQ answers
+* Big improvement to performance of product and order data exporting
+* Fixed bug in order export
 
 = 1.0.0 =
 * First release
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+* This release fixes a bug in order data exporting, and significantly improves the performance and efficiency of data exporting for products and orders.
 
 = 1.0.0 =
 * First release

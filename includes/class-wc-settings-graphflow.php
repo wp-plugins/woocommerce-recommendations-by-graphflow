@@ -234,7 +234,7 @@ class WC_Settings_Graphflow extends WC_Settings_Page {
 			<div id="gf_logo_buttons">
 				<a href="http://www.graphflow.com" target="_blank"><?php echo '<img src="' . plugins_url( 'assets/graphflow-logo.png' , dirname(__FILE__) ) . '" style="max-width: 180px; margin-top:20px">'; ?></a>
 
-				<p class="submit"><a href="https://www.graphflow.com/plugin/docs" target="_blank" class="button-primary">Documentation</a> <a class="docs button-primary" href="https://app.graphflow.com/dashboard/account" target="_blank">Account</a></p>
+				<p class="submit"><a href="https://wordpress.org/plugins/woocommerce-recommendations-by-graphflow/" target="_blank" class="button-primary">Documentation</a> <a class="docs button-primary" href="https://app.graphflow.com/dashboard/account" target="_blank">Account</a></p>
 
 				<p>
 			</div>

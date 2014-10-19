@@ -1,13 +1,13 @@
 <?php
 /*
  	Plugin Name: WooCommerce Recommendations by Graphflow
- 	Version: 1.0.0
-	Plugin URI: http://www.woothemes.com/
+ 	Version: 1.0.1
+	Plugin URI: http://www.woothemes.com/products/woocommerce-recommendations/
 	Description: Recommendations for WooCommerce, powered by the Graphflow recommendation engine
 	Author: Gerhard Potgieter
 	Author URI: http://www.woothemes.com/
-	Requires at least: 3.8
-	Tested up to: 3.8
+	Requires at least: 3.9
+	Tested up to: 4.0
 
 	@package WooCommerce
 	@author WooThemes

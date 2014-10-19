@@ -180,15 +180,28 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 			// Capture product if not already captured.
 			if ( 'yes' !== get_post_meta( $product->id, '_wc_graphflow_exported', true ) ) {
 				$this->capture_product( $product );
-
 			}
 		}
 
 		public function capture_product( $product ) {
+			$product_data = $this->extract_product_data ( $product );
+			$instock = $product->is_in_stock();
+			$this->get_api()->add_item( $product->id, apply_filters( 'woocommerce_graphflow_product_data', $product_data ), $instock );
+			update_post_meta( $product->id, '_wc_graphflow_exported', 'yes' );
+		}
+
+		public function capture_products( $products ) {
+			$this->get_api()->update_items( apply_filters( 'woocommerce_graphflow_product_data', $products ) );
+			foreach ( $products as $product ) {
+				update_post_meta( $product->itemId, '_wc_graphflow_exported', 'yes' );
+			}
+		}
+
+		public function extract_product_data( $product ) {
 			$product_data = array(
 				'name'				=> $product->get_title(),
-				'regular_price' 	=> $product->regular_price,
-				'sale_price'		=> $product->sale_price,
+				'regular_price' 	=> floatval( $product->regular_price ),
+				'sale_price'		=> floatval( $product->sale_price ),
 				'sku'				=> $product->get_sku(),
 				'url'				=> $product->get_permalink(),
 				'product_cat'		=> '[' . implode( '|', wp_get_object_terms( $product->id, 'product_cat', array( 'fields' => 'names' ) ) ) . ']',
@@ -197,9 +210,13 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 				'product_tag_ids'	=> '[' . implode( '|', wp_get_object_terms( $product->id, 'product_tag', array( 'fields' => 'ids' ) ) ) . ']',
 				'image_url'			=> $this->get_product_images( $product ),
 				'description'		=> $product->post->post_content,
+				'post_type'         => get_post_type( $product->id ),
 			);
-			$this->get_api()->add_item( $product->id, apply_filters( 'woocommerce_graphflow_product_data', $product_data ) );
-			update_post_meta( $product->id, '_wc_graphflow_exported', 'yes' );
+			return $product_data;
+		}
+
+		public function capture_sale_event( $order_id ) {
+			$this->capture_sale_events( array( $order_id ) );
 		}
 
 		/**
@@ -208,39 +225,62 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 		 * @param  int $order_id
 		 * @return void
 		 */
-		public function capture_sale_event( $order_id, $historic = false ) {
-			$exported = get_post_meta( $order_id, '_wc_graphflow_exported', true );
-			if ( 'yes' !== $exported ) {
+		public function capture_sale_events( $order_ids, $historic = false ) {
+			$products = array();
+			foreach ( $order_ids as $order_id ) {
+				$exported = get_post_meta( $order_id, '_wc_graphflow_exported', true );
+				if ( 'yes' !== $exported ) {
 
-				$order = new WC_Order( $order_id );
-				if ( ! $order ) {
-					return;
-				}
-
-				$products = array();
-				foreach ( $order->get_items() as $order_item_id => $order_item ) {
-					$this->maybe_capture_product ( $order_item['product_id'] ); 
-					$_product = get_product( $order_item['product_id'] );
-
-					$graphflow_order_item = array(
-						'toId' => $order_item['product_id'],
-						'interactionType' => 'purchase',
-						'price' => $_product->get_price(),
-						'quantity' => $order_item['qty'],
-						'timestamp' => strtotime($order->order_date) * 1000
-					);
-					$products[] = $graphflow_order_item;
-				}
-				if ($historic == true) { 
-					$order_user = isset($order->customer_user) ? $order->customer_user : $order->billing_email;
-					if ($order_user == 0) {
-						$order_user = $order->billing_email;
+					$order = new WC_Order( $order_id );
+					if ( ! $order ) {
+						return;
 					}
-				} else {
-					$order_user = $this->get_user_id();
+					$order_currency = $order->get_order_currency();
+					$order_id = $order->id;
+					$customer_ip_address = $order->customer_ip_address;
+					$customer_user_agent = $order->customer_user_agent;
+					$order_status = $order->get_status();
+					
+					foreach ( $order->get_items() as $order_item_id => $order_item ) {
+						if ($historic == true) { 
+							$order_user = isset($order->customer_user) ? $order->customer_user : $order->billing_email;
+							if ($order_user == 0) {
+								$order_user = $order->billing_email;
+							}
+						} else {
+							$order_user = $this->get_user_id();
+						}
+
+						$this->maybe_capture_product ( $order_item['product_id'] ); 
+						$_product = get_product( $order_item['product_id'] );
+
+						$graphflow_order_item = array(
+							'fromId' => $order_user,
+							'toId' => $order_item['product_id'],
+							'interactionType' => 'purchase',
+							'price' => $_product->get_price(),
+							'quantity' => $order_item['qty'],
+							'interactionData' => array(
+								'order_currency' => $order_currency,
+								'transactionId' => $order_id,
+								'remoteAddr' => $customer_ip_address,
+								'uaRaw' => $customer_user_agent,
+								'order_status' => $order_status,
+								),
+							'timestamp' => strtotime($order->order_date) * 1000
+						);
+						$products[] = $graphflow_order_item;
+					}
+					// For historical orders, only capture if not already captured
+					if ( $historic == false  || 'yes' != get_user_meta( $user_id, '_wc_graphflow_exported', true ) ) {
+						$this->capture_customer( $order_user, $historic );
+					} 
 				}
-				$this->get_api()->add_user_interactions( $order_user, $products );
-				$this->capture_customer( $order_user, $historic );
+			}
+			if ( !empty( $products ) ) {
+				$this->get_api()->add_user_interactions( $products );
+			}
+			foreach ( $order_ids as $order_id ) {
 				// Set a meta field so we do not export again when visiting thanks page for this order
 				update_post_meta( $order_id, '_wc_graphflow_exported', 'yes' );
 			}
@@ -297,14 +337,23 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 				if ( $current_page >= $query->max_num_pages ) {
 					$finished = true;
 				}
+				$products = array();
 				while ( $query->have_posts() ) {
 					$query->the_post();
 					$product = get_product( get_the_ID() );
 					if ( ! $product ) {
 						continue;
 					}
-					$this->capture_product( $product );
+					$product_data = $this->extract_product_data( $product );
+					$instock = $product->is_in_stock();
+					$item_data = array(
+						'itemId' 	=> (string) $product->id,
+						'itemData'  => $product_data,
+						'active' 	=> $instock,
+					);
+					$products[] = $item_data;
 				}
+				$this->capture_products( $products );
 				$current_page = $current_page + 1;
 			}
 		}
@@ -336,10 +385,13 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 				if ( $current_page >= $query->max_num_pages || $current_page >= $max_pages ) {
 					$finished = true;
 				}
+				$sales = array();
 				while ( $query->have_posts() ) {
 					$query->the_post();
-					$this->capture_sale_event( get_the_ID(), true );
+					$sales[] = get_the_ID();
 				}
+				$this->capture_sale_events( $sales, true );
+				$current_page = $current_page + 1;
 			}
 		}
 

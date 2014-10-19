@@ -101,10 +101,11 @@ if ( ! class_exists( 'WC_GraphFlow_API' ) ) {
 		 * @param array  $item_data
 		 * @return array
 		 */
-		public function add_item( $item_id, $item_data = array() ) {
+		public function add_item( $item_id, $item_data = array(), $instock = true ) {
 			$call_data = array(
 				'itemId' => (string)$item_id,
 				'itemData' => $item_data,
+				'active' => $instock,
 			);
 
 			$response = $this->perform_request( 'item/', json_encode( $call_data ), 'PUT' );
@@ -134,6 +135,11 @@ if ( ! class_exists( 'WC_GraphFlow_API' ) ) {
 			);
 
 			$response = $this->perform_request( 'item/', json_encode( $call_data ), 'PUT' );
+			return json_decode( $response['body'] );
+		}
+
+		public function update_items( $items ) {
+			$response = $this->perform_request( 'item/itemlist', json_encode( $items ), 'PUT' );
 			return json_decode( $response['body'] );
 		}
 
@@ -197,15 +203,16 @@ if ( ! class_exists( 'WC_GraphFlow_API' ) ) {
 		 * @param array $interactions
 		 * @return array
 		 */
-		public function add_user_interactions( $user_id, $interactions ) {
+		public function add_user_interactions( $interactions ) {
 			$call_data = array();
 
 			foreach ( $interactions as $interaction ) {
 				$interaction_data = array(
-					'fromId' => $user_id,
+					'fromId' => $interaction['fromId'],
 					'toId' => $interaction['toId'],
 					'interactionType' => $interaction['interactionType'],
-					'timestamp' => (int)$interaction['timestamp']
+					'timestamp' => (int)$interaction['timestamp'],
+					'interactionData' => $interaction['interactionData'],
 				);
 				if ( isset( $interaction['price'] ) ) {
 					$interaction_data['price'] = (float)$interaction['price'];
@@ -237,6 +244,10 @@ if ( ! class_exists( 'WC_GraphFlow_API' ) ) {
 		 */
 		public function get_product_recommendations( $product_id, $user_id, $number = 5, $filters = '') {
 			$response = $this->perform_request( 'recommend/item/' . absint( $product_id ) . '/similar', json_encode( array( 'userId' => $user_id, 'num' => $number, 'filters' => $filters ) ), 'GET' );
+			if ( isset( $response['response']['code'] ) &&  404 == $response['response']['code'] ) {
+				// if no data or not found, return an empty array
+				return array();
+			}
 			return json_decode( $response['body'] );
 		}
 
@@ -248,6 +259,10 @@ if ( ! class_exists( 'WC_GraphFlow_API' ) ) {
 		 */
 		public function get_user_recommendations( $user_id, $number = 5, $filters = '' ) {
 			$response = $this->perform_request( '/recommend/user/' . $user_id, json_encode( array( 'num' => $number, 'filters' => $filters ) ), 'GET' );
+			if ( isset( $response['response']['code'] ) &&  404 == $response['response']['code'] ) {
+				// if no data or not found, return an empty array
+				return array();
+			}
 			return json_decode( $response['body'] );
 		}
 
@@ -259,6 +274,10 @@ if ( ! class_exists( 'WC_GraphFlow_API' ) ) {
 		 */
 		public function get_user_product_recommendations( $product_id, $user_id, $number = 5, $filters = '' ) {
 			$response = $this->perform_request( '/recommend/useritem/' . $user_id, json_encode( array( 'itemId' => absint( $product_id ), 'num' => $number, 'filters' => $filters ) ), 'GET' );
+			if ( isset( $response['response']['code'] ) &&  404 == $response['response']['code'] ) {
+				// if no data or not found, return an empty array
+				return array();
+			}
 			return json_decode( $response['body'] );
 		}
 
