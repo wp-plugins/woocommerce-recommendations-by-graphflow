@@ -3,7 +3,7 @@ Contributors: kloon, woothemes, mlnick, graphflow
 Tags: woocommerce, recommendations, products, users, analytics, customers, targeting, marketing
 Requires at least: 3.9
 Tested up to: 4.0.0
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -164,16 +164,25 @@ Thank you! Please tell your friends. We also welcome all your feedback, good or 
 
 == Changelog ==
 
+= 1.0.2 =
+* Fix - Make order export compatible with WC 2.1 again
+* Fix - Make numeric recommendation options compatible with WC 2.1 
+* Fix - Correctly display current values of numeric recommendation options in Graphflow settings page
+* Fix - Minor issue with user export being done multiple times when exporting orders
+
 = 1.0.1 =
-* Minor fix to error handling when no data has been sent to Graphflow yet
-* Added some FAQ answers
-* Big improvement to performance of product and order data exporting
-* Fixed bug in order export
+* Fix - Add error handling when no data has been sent to Graphflow yet
+* Doc - Added some FAQ answers
+* Tweak - Big improvement to performance of product and order data exporting
+* Fix - Bug in order export
 
 = 1.0.0 =
 * First release
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+* This release fixes important issues with WooCommerce 2.1 compatibility. We recommend upgrading for all users.
 
 = 1.0.1 =
 * This release fixes a bug in order data exporting, and significantly improves the performance and efficiency of data exporting for products and orders.

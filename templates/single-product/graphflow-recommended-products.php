@@ -21,7 +21,7 @@ if ( ! empty( $title ) ) {
 	$gf_title = get_option( 'woocommerce_graphflow_product_rec_title' );
 }
 
-if ( ! empty( $posts_per_page ) ) {
+if ( ! empty( $posts_per_page ) && $posts_per_page > 0 ) {
 	$gf_num = $posts_per_page;
 } else if ( is_shop() || is_product_category() ) {
 	$gf_num = get_option( 'woocommerce_graphflow_user_rec_num' );

@@ -32,6 +32,9 @@ class WC_Settings_Graphflow extends WC_Settings_Page {
 		add_action( 'woocommerce_settings_save_' . $this->id, array( $this, 'save' ) );
 		add_action( 'woocommerce_admin_field_button', array( $this, 'button_field' ), 10, 1 );
 		add_action( 'woocommerce_admin_field_number_minmax', array( $this, 'number_minmax' ), 10, 1 );
+		if ( defined( 'WOOCOMMERCE_VERSION' ) && version_compare( WOOCOMMERCE_VERSION, '2.2', '<' ) ) {
+			add_action( 'woocommerce_update_option_number_minmax', array( $this, 'number_minmax_save' ), 10, 1 );
+		}
 	}
 
 
@@ -242,6 +245,10 @@ class WC_Settings_Graphflow extends WC_Settings_Page {
 	}
 
 	public function number_minmax( $params ) {
+	  $option_value = get_option( $params['id'] );
+	  if ( !$option_value ) {
+	  	$option_value = $params['default'];
+	  }
 	  $tip = '<img class="help_tip" data-tip="' . esc_attr( $params['desc_tip'] ) . '" src="' . WC()->plugin_url() . '/assets/images/help.png" height="16" width="16" />';
 	  ?>
 	  <tr valign="top">
@@ -250,6 +257,7 @@ class WC_Settings_Graphflow extends WC_Settings_Page {
 	  			<?php echo $tip; ?>
 	  		</th>
 	  		<td class="forminp forminp-<?php echo sanitize_title( $params['type'] ) ?>">
+
 	  			<input
 	  				name="<?php echo esc_attr( $params['id'] ); ?>"
 	  				id="<?php echo esc_attr( $params['id'] ); ?>"
@@ -257,12 +265,19 @@ class WC_Settings_Graphflow extends WC_Settings_Page {
 	  				style="<?php echo esc_attr( $params['css'] ); ?>"
 	  				min="<?php echo esc_attr( $params['min'] ); ?>"
 	  				max="<?php echo esc_attr( $params['max'] ); ?>"
-	  				value="<?php echo esc_attr( $params['default'] ); ?>"
+	  				value="<?php echo esc_attr( $option_value ); ?>"
 	  				class="<?php echo esc_attr( $params['class'] ); ?>"
 	  				/> <?php echo $params['desc']; ?>
 	  		</td>
 	  	</tr>
 	  	<?php
+	}
+
+	public function number_minmax_save( $value ) {
+		if ( isset( $_POST[$value['id']] ) ) {
+			$option_value = wc_clean( stripslashes( $_POST[ $value['id'] ] ) );
+			update_option( $value['id'], $option_value );
+		}
 	}
 
 	public function button_field( $params ) {

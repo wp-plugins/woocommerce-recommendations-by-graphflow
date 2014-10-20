@@ -239,7 +239,12 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 					$order_id = $order->id;
 					$customer_ip_address = $order->customer_ip_address;
 					$customer_user_agent = $order->customer_user_agent;
-					$order_status = $order->get_status();
+					// extract order status, different for WC 2.1 vs 2.2
+					if ( defined( 'WOOCOMMERCE_VERSION' ) && version_compare( WOOCOMMERCE_VERSION, '2.2', '>=' ) ) {
+			     		$order_status = $order->get_status();
+					} else {
+			     		$order_status = $order->status;
+					}
 					
 					foreach ( $order->get_items() as $order_item_id => $order_item ) {
 						if ($historic == true) { 
@@ -272,7 +277,7 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 						$products[] = $graphflow_order_item;
 					}
 					// For historical orders, only capture if not already captured
-					if ( $historic == false  || 'yes' != get_user_meta( $user_id, '_wc_graphflow_exported', true ) ) {
+					if ( $historic == false  || 'yes' != get_user_meta( $order_user, '_wc_graphflow_exported', true ) ) {
 						$this->capture_customer( $order_user, $historic );
 					} 
 				}

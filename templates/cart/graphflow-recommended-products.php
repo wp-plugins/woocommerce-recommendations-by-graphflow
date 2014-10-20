@@ -10,7 +10,7 @@ if ( ! empty( $title ) ) {
 	$gf_title = get_option( 'woocommerce_graphflow_cart_rec_title' );
 }
 
-if ( ! empty( $posts_per_page ) ) {
+if ( ! empty( $posts_per_page ) && $posts_per_page > 0 ) {
 	$gf_num = $posts_per_page;
 } else {
 	$gf_num = get_option( 'woocommerce_graphflow_cart_rec_num' );
@@ -27,6 +27,8 @@ $cart_products = array();
 $gf_user = $GLOBALS['wc_graphflow']->get_user_id();
 
 $total_prods = WC()->cart->get_cart_contents_count();
+// if no contents in cart, return
+if ( $total_prods <= 0 ) return;
 $num_per_prod = ceil( $gf_num / $total_prods );
 
 foreach ( WC()->cart->get_cart() as $cart_item ) {
