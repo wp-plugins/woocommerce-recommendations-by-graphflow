@@ -1,7 +1,7 @@
 <?php
 /*
  	Plugin Name: WooCommerce Recommendations by Graphflow
- 	Version: 1.0.2
+ 	Version: 1.0.3
 	Plugin URI: http://www.woothemes.com/products/woocommerce-recommendations/
 	Description: Recommendations for WooCommerce, powered by the Graphflow recommendation engine
 	Author: Gerhard Potgieter
@@ -14,6 +14,13 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+if ( ! function_exists( 'is_woocommerce_active' ) )
+	require_once( 'woo-includes/woo-functions.php' );
+
+// Check if WooCommerce is active
+if ( ! is_woocommerce_active() )
+	return;
 
 function gf_activation_hook() {
 	update_option( 'woocommerce_graphflow_install_notice', false );

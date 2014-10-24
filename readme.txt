@@ -3,7 +3,7 @@ Contributors: kloon, woothemes, mlnick, graphflow
 Tags: woocommerce, recommendations, products, users, analytics, customers, targeting, marketing
 Requires at least: 3.9
 Tested up to: 4.0.0
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -164,6 +164,9 @@ Thank you! Please tell your friends. We also welcome all your feedback, good or 
 
 == Changelog ==
 
+= 1.0.3 =
+* Fix - Add WooCommerce active check
+
 = 1.0.2 =
 * Fix - Make order export compatible with WC 2.1 again
 * Fix - Make numeric recommendation options compatible with WC 2.1 
@@ -180,6 +183,9 @@ Thank you! Please tell your friends. We also welcome all your feedback, good or 
 * First release
 
 == Upgrade Notice ==
+
+= 1.0.3 =
+* This release adds a check for if WooCommerce is active. It is critical to upgrade so that the plugin handles WooCommerce version upgrades gracefully.
 
 = 1.0.2 =
 * This release fixes important issues with WooCommerce 2.1 compatibility. We recommend upgrading for all users.
