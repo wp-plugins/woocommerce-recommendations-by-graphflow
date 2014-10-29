@@ -1,7 +1,7 @@
 <?php
 /*
  	Plugin Name: WooCommerce Recommendations by Graphflow
- 	Version: 1.0.3
+ 	Version: 1.0.4
 	Plugin URI: http://www.woothemes.com/products/woocommerce-recommendations/
 	Description: Recommendations for WooCommerce, powered by the Graphflow recommendation engine
 	Author: Gerhard Potgieter

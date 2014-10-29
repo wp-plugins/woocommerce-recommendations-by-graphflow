@@ -3,7 +3,7 @@ Contributors: kloon, woothemes, mlnick, graphflow
 Tags: woocommerce, recommendations, products, users, analytics, customers, targeting, marketing
 Requires at least: 3.9
 Tested up to: 4.0.0
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -164,6 +164,9 @@ Thank you! Please tell your friends. We also welcome all your feedback, good or 
 
 == Changelog ==
 
+= 1.0.4 =
+* Tweak - Make functions for WooCommerce active check static
+
 = 1.0.3 =
 * Fix - Add WooCommerce active check
 
@@ -183,6 +186,9 @@ Thank you! Please tell your friends. We also welcome all your feedback, good or 
 * First release
 
 == Upgrade Notice ==
+
+= 1.0.4 =
+* Minor update to make functions for WooCommerce active check static.
 
 = 1.0.3 =
 * This release adds a check for if WooCommerce is active. It is critical to upgrade so that the plugin handles WooCommerce version upgrades gracefully.
