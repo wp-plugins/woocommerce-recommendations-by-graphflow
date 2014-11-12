@@ -62,7 +62,7 @@ $woocommerce_loop['columns'] = apply_filters( 'woocommerce_graphflow_cart_recomm
 
 if ( $products->have_posts() ) : ?>
 
-	<div class="graphflow_recommendations">
+	<div class="graphflow_recommendations related products">
 
 		<h2><?php echo $gf_title ?></h2>
 

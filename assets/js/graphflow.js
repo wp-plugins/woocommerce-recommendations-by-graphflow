@@ -4,7 +4,7 @@ function parseS4D(sentence) {
 }
 
 jQuery( document ).ready(function( $ ) {
-	if ( woocommerce_params.gf_api_key != 'undefined' && typeof woocommerce_params.gf_action != 'undefined' ) {
+	if ( typeof woocommerce_params.gf_client_key != 'undefined' && typeof woocommerce_params.gf_action != 'undefined' ) {
 		var gf_url = woocommerce_params.gf_url + '?';
 
 		// User

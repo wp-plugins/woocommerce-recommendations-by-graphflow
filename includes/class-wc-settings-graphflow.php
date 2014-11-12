@@ -120,6 +120,13 @@ class WC_Settings_Graphflow extends WC_Settings_Page {
 				'max'   	=> 12,
 				'default'   => 4,
 			),
+			array(
+				'title' 	=> __( 'Restrict Category', 'wc-graphflow' ),
+				'desc' 	=> 'Check this box to restrict similar product recommendations to the same category as the current product',
+				'id' 		=> 'woocommerce_graphflow_product_rec_restrict_category',
+				'default'	=> 'yes',
+				'type' 		=> 'checkbox',
+			),
 			array( 'type' => 'sectionend', 'id' => 'similar_options'),
 			array( 'title' => __( 'Cart Recommendations', 'wc-graphflow' ), 'type' => 'title', 'desc' => __( 'Graphflow cart recommendations are shown on the cart page, based on the products in the cart and the current user.', 'wc-graphflow' ), 'id' => 'cart_options' ),
 			array(

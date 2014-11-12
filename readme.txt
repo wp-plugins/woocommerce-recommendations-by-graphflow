@@ -3,7 +3,7 @@ Contributors: kloon, woothemes, mlnick, graphflow
 Tags: woocommerce, recommendations, products, users, analytics, customers, targeting, marketing
 Requires at least: 3.9
 Tested up to: 4.0.0
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -164,28 +164,35 @@ Thank you! Please tell your friends. We also welcome all your feedback, good or 
 
 == Changelog ==
 
+= 1.0.5 =
+* Tweak - Add WooCommerce product-related CSS to Graphflow recommendations. This should improve compatability across a wide range of themes.
+* Feature - Add new option to restrict similar product recommendations to the same category as the current product being displayed. This is on by default, but can be turned off by unchecking the 'Restrict Category' option in the settings page.
+
 = 1.0.4 =
-* Tweak - Make functions for WooCommerce active check static
+* Tweak - Make functions for WooCommerce active check static.
 
 = 1.0.3 =
-* Fix - Add WooCommerce active check
+* Fix - Add WooCommerce active check.
 
 = 1.0.2 =
-* Fix - Make order export compatible with WC 2.1 again
-* Fix - Make numeric recommendation options compatible with WC 2.1 
-* Fix - Correctly display current values of numeric recommendation options in Graphflow settings page
-* Fix - Minor issue with user export being done multiple times when exporting orders
+* Fix - Make order export compatible with WC 2.1 again.
+* Fix - Make numeric recommendation options compatible with WC 2.1.
+* Fix - Correctly display current values of numeric recommendation options in Graphflow settings page.
+* Fix - Minor issue with user export being done multiple times when exporting orders.
 
 = 1.0.1 =
-* Fix - Add error handling when no data has been sent to Graphflow yet
-* Doc - Added some FAQ answers
-* Tweak - Big improvement to performance of product and order data exporting
-* Fix - Bug in order export
+* Fix - Add error handling when no data has been sent to Graphflow yet.
+* Doc - Added some FAQ answers.
+* Tweak - Big improvement to performance of product and order data exporting.
+* Fix - Bug in order export.
 
 = 1.0.0 =
-* First release
+* First release.
 
 == Upgrade Notice ==
+
+= 1.0.5 =
+* This release enhances recommended product styling to be more in line with the WooCommerce product display CSS. It should improve compatability with a wide range of themes, and we recommend upgrading.
 
 = 1.0.4 =
 * Minor update to make functions for WooCommerce active check static.

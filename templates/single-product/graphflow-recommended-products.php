@@ -6,11 +6,16 @@ global $product, $woocommerce, $woocommerce_loop;
 
 $gf_products = array();
 $gf_user = $GLOBALS['wc_graphflow']->get_user_id();
+$filters = '';
 
 if ( ! empty( $product_id ) ) {
 	$gf_product_id = $product_id;
 } else if ( is_product() ) {
 	$gf_product_id = $product->id;
+	if ( 'yes' == get_option( 'woocommerce_graphflow_product_rec_restrict_category' ) ) {
+		$product_cats = implode( ' ', wp_get_object_terms( $product->id, 'product_cat', array( 'fields' => 'ids' ) ) );
+		$filters = 'product_cat_ids=' . $product_cats;
+	}
 }
 
 if ( ! empty( $title ) ) {
@@ -36,8 +41,6 @@ if ( ! empty( $columns ) ) {
 } else {
 	$gf_columns = get_option( 'woocommerce_graphflow_product_rec_col' );
 }
-
-$filters = '';
 
 if ( isset( $gf_product_id ) ) {
 	$gf_recommendations = $GLOBALS['wc_graphflow']->get_api()->get_product_recommendations( $gf_product_id, $gf_user, apply_filters( 'woocommerce_graphflow_recommended_products_total', $gf_num ), $filters );
@@ -72,7 +75,7 @@ $woocommerce_loop['columns'] = apply_filters( 'woocommerce_graphflow_product_rec
 
 if ( $products->have_posts() ) : ?>
 
-	<div class="graphflow_recommendations">
+	<div class="graphflow_recommendations related products">
 
 		<h2><?php echo $gf_title ?></h2>
 

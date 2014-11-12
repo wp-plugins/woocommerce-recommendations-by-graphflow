@@ -99,7 +99,7 @@ class WC_Widget_Graphflow_Recommended_Products extends WC_Widget {
 			if ( $title )
 				echo $before_title . $title . $after_title;
 
-			echo '<ul class="graphflow_recommendations_widget">';
+			echo '<ul class="graphflow_recommendations_widget product_list_widget">';
 
 			while ( $r->have_posts()) {
 				$r->the_post();

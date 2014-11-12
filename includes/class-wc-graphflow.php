@@ -84,6 +84,31 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 
 			// Listen for request to export products.
 			add_action( 'init', array( $this, 'custom_form_handler' ) );
+
+			// Dashboard widget
+			//add_action( 'wp_dashboard_setup', array( $this, 'graphflow_add_dashboard_widgets' ) );
+		}
+
+		/**
+		 * Add a widget to the dashboard.
+		 *
+		 * This function is hooked into the 'graphflow_dashboard_widget_function' action below.
+		 */
+		public function graphflow_add_dashboard_widgets() {
+
+			wp_add_dashboard_widget(
+		                 'graphflow_dashboard_widget',         				// Widget slug.
+		                 'Graphflow Dashboard',         						// Title.
+		                 array( $this, 'graphflow_dashboard_widget_function' ) // Display function.
+		        );	
+		}
+		
+
+		/**
+		 * Create the function to output the contents of Graphflow Dashboard Widget.
+		 */
+		public function graphflow_dashboard_widget_function( $post, $callback_args ) {
+			//echo "Hello World, this is my first Dashboard Widget!";
 		}
 
 		/**
