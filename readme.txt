@@ -3,7 +3,7 @@ Contributors: kloon, woothemes, mlnick, graphflow
 Tags: woocommerce, recommendations, products, users, analytics, customers, targeting, marketing
 Requires at least: 3.9
 Tested up to: 4.0.0
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -164,6 +164,9 @@ Thank you! Please tell your friends. We also welcome all your feedback, good or 
 
 == Changelog ==
 
+= 1.0.6 =
+* Fix - Graphflow widget now has its own unique identifier. This fixes a conflict with built-in WooCommerce Product widget. After upgrading, users that are using the Graphflow widget should first delete it from the relevant widget area, and then add it again.
+
 = 1.0.5 =
 * Tweak - Add WooCommerce product-related CSS to Graphflow recommendations. This should improve compatability across a wide range of themes.
 * Feature - Add new option to restrict similar product recommendations to the same category as the current product being displayed. This is on by default, but can be turned off by unchecking the 'Restrict Category' option in the settings page.
@@ -190,6 +193,9 @@ Thank you! Please tell your friends. We also welcome all your feedback, good or 
 * First release.
 
 == Upgrade Notice ==
+
+= 1.0.6 =
+* This release fixes an id conflict with the built-in WooCommerce Product widget, and we recommend upgrading.
 
 = 1.0.5 =
 * This release enhances recommended product styling to be more in line with the WooCommerce product display CSS. It should improve compatability with a wide range of themes, and we recommend upgrading.

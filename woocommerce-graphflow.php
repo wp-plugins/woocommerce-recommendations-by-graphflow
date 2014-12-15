@@ -5,7 +5,7 @@
 	Description: Recommendations for WooCommerce, powered by the Graphflow recommendation engine
 	Author: Gerhard Potgieter / Graphflow
 	Author URI: http://www.graphflow.com/
-	Version: 1.0.5
+	Version: 1.0.6
 	Requires at least: 3.9
 	Tested up to: 4.0
 

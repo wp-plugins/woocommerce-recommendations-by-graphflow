@@ -7,6 +7,7 @@ global $product, $woocommerce, $woocommerce_loop;
 $gf_products = array();
 $gf_user = $GLOBALS['wc_graphflow']->get_user_id();
 $filters = '';
+$gf_recId = '';
 
 if ( ! empty( $product_id ) ) {
 	$gf_product_id = $product_id;
@@ -57,6 +58,10 @@ if ( isset( $gf_recommendations->result ) ) {
 	}
 }
 
+if ( isset( $gf_recommendations->recId ) ) {
+	$gf_recId = $gf_recommendations->recId;
+}
+
 if ( sizeof( $gf_products ) == 0 ) return;
 
 $gf_products = array_slice( $gf_products, 0, apply_filters( 'woocommerce_graphflow_recommended_products_total', $gf_num ) );
@@ -75,7 +80,7 @@ $woocommerce_loop['columns'] = apply_filters( 'woocommerce_graphflow_product_rec
 
 if ( $products->have_posts() ) : ?>
 
-	<div class="graphflow_recommendations related products">
+	<div class="graphflow_recommendations related products" gf-recid="<?php echo $gf_recId;?>">
 
 		<h2><?php echo $gf_title ?></h2>
 

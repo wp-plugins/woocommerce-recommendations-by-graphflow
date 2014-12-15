@@ -19,7 +19,7 @@ class WC_Widget_Graphflow_Recommended_Products extends WC_Widget {
 	public function __construct() {
 		$this->widget_cssclass    = 'woocommerce widget_products';
 		$this->widget_description = __( 'Display a list of recommended products for the current user on your site.', 'wc-graphflow' );
-		$this->widget_id          = 'woocommerce_products';
+		$this->widget_id          = 'graphflow_recommendations_widget';
 		$this->widget_name        = __( 'WooCommerce Graphflow Recommended Products', 'wc-graphflow' );
 		$this->settings           = array(
 			'title'  => array(
@@ -76,6 +76,11 @@ class WC_Widget_Graphflow_Recommended_Products extends WC_Widget {
 			}
 		}
 
+		$gf_recId = '';
+		if ( isset( $gf_recommendations->recId ) ) {
+			$gf_recId = $gf_recommendations->recId;
+		}
+
 		$gf_products = array_unique( $gf_products );
 
 		if ( count( $gf_products ) == 0 ) {
@@ -99,7 +104,7 @@ class WC_Widget_Graphflow_Recommended_Products extends WC_Widget {
 			if ( $title )
 				echo $before_title . $title . $after_title;
 
-			echo '<ul class="graphflow_recommendations_widget product_list_widget">';
+			echo '<ul class="graphflow_recommendations_widget product_list_widget" gf-recid="' . $gf_recId . '">';
 
 			while ( $r->have_posts()) {
 				$r->the_post();
