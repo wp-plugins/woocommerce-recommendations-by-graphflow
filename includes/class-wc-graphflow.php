@@ -12,7 +12,6 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 
 		public static $file;
 
-
 		/**
 		 * Constructor
 		 *
@@ -41,10 +40,10 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 				add_filter( 'woocommerce_get_settings_pages', array( $this, 'load_settings_class' ), 10, 1 );
 
 				// Export product on quick edit save
-				add_action( 'save_post', array( $this, 'capture_product_quick_edit_save' ), 10, 2 );
+				add_action( 'save_post', array( $this, 'capture_product_quick_edit_save' ), 20, 2 );
 
 				// Export product on save
-				add_action( 'save_post', array( $this, 'capture_product_save' ), 10, 2 );
+				add_action( 'save_post', array( $this, 'capture_product_save' ), 20, 2 );
 
 				// Delete product on delete
 				add_action( 'delete_post', array( $this, 'capture_product_delete' ), 10, 1 );
@@ -150,6 +149,9 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 		 */
 		public function capture_product_on_view_event() {
 			if ( is_product() ) {
+				if ( is_feed() ) {
+					return;
+				}
 				global $product;
 				$this->maybe_capture_product( $product->id );
 			}
@@ -177,6 +179,10 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 		 */
 		public function maybe_capture_product( $product_id ) {
 			$product = get_product( $product_id );
+			if ( ! $product ) {
+				$this->get_api()->log->add("graphflow", "Failed to get_product for id: " . $product_id);
+				return;
+			}
 			// Capture product if not already captured.
 			if ( 'yes' !== get_post_meta( $product->id, '_wc_graphflow_exported', true ) ) {
 				$this->capture_product( $product );
@@ -186,6 +192,10 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 		public function capture_product( $product ) {
 			$product_data = $this->extract_product_data ( $product );
 			$instock = $product->is_in_stock();
+			// if the product is not visible, mark it as 'inactive'
+			if ( !$product->is_visible() ) {
+				$instock = false;
+			}
 			$this->get_api()->add_item( $product->id, apply_filters( 'woocommerce_graphflow_product_data', $product_data ), $instock );
 			update_post_meta( $product->id, '_wc_graphflow_exported', 'yes' );
 		}
@@ -193,7 +203,7 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 		public function capture_products( $products ) {
 			$this->get_api()->update_items( apply_filters( 'woocommerce_graphflow_product_data', $products ) );
 			foreach ( $products as $product ) {
-				update_post_meta( $product->itemId, '_wc_graphflow_exported', 'yes' );
+				update_post_meta( $product['itemId'], '_wc_graphflow_exported', 'yes' );
 			}
 		}
 
@@ -247,6 +257,7 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 					}
 					
 					foreach ( $order->get_items() as $order_item_id => $order_item ) {
+						// extract the user id for the order
 						if ($historic == true) { 
 							$order_user = isset($order->customer_user) ? $order->customer_user : $order->billing_email;
 							if ($order_user == 0) {
@@ -256,14 +267,22 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 							$order_user = $this->get_user_id();
 						}
 
+						// check if we can get the product, log an error message if not.
+						$product = get_product( $order_item['product_id'] ); 
+						if ( ! $product ) {
+							$this->get_api()->log->add(
+								"graphflow", 
+								"Failed to get_product for id: " . $order_item['product_id'] . " during order export for order id: " . $order->id );
+							continue;
+						}
+
 						$this->maybe_capture_product ( $order_item['product_id'] ); 
-						$_product = get_product( $order_item['product_id'] );
 
 						$graphflow_order_item = array(
 							'fromId' => $order_user,
 							'toId' => $order_item['product_id'],
 							'interactionType' => 'purchase',
-							'price' => $_product->get_price(),
+							'price' => $product->get_price(),
 							'quantity' => $order_item['qty'],
 							'interactionData' => array(
 								'order_currency' => $order_currency,
@@ -282,7 +301,7 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 					} 
 				}
 			}
-			if ( !empty( $products ) ) {
+			if ( ! empty( $products ) ) {
 				$this->get_api()->add_user_interactions( $products );
 			}
 			foreach ( $order_ids as $order_id ) {
@@ -347,10 +366,17 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 					$query->the_post();
 					$product = get_product( get_the_ID() );
 					if ( ! $product ) {
+						$this->get_api()->log->add(
+							"graphflow", 
+							"Failed to get_product for id: " . get_the_ID() . " during product export" );
 						continue;
 					}
 					$product_data = $this->extract_product_data( $product );
 					$instock = $product->is_in_stock();
+					// if the product is not visible, mark it as 'inactive'
+					if ( !$product->is_visible() ) {
+						$instock = false;
+					}
 					$item_data = array(
 						'itemId' 	=> (string) $product->id,
 						'itemData'  => $product_data,
@@ -415,6 +441,13 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 			if ( $post->post_type != 'product' ) return $post_id;
 
 			$product = get_product( $post_id );
+			
+			if ( ! $product ) {
+				$this->get_api()->log->add(
+					"graphflow", 
+					"Failed to get_product for id: " . $post_id . " during capture_product_quick_edit_save");
+				return $post_id;
+			}
 
 			$this->capture_product( $product );
 		}
@@ -432,6 +465,13 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 			if ( $post->post_type != 'product' ) return $post_id;
 
 			$product = get_product( $post_id );
+			
+			if ( ! $product ) {
+				$this->get_api()->log->add(
+					"graphflow", 
+					"Failed to get_product for id: " . $post_id . " during capture_product_save");				
+				return $post_id;
+			}
 
 			$this->capture_product( $product );
 		}
@@ -459,6 +499,10 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 		public function capture_customer( $customer_id, $historic = false ) {
 			$user_data = get_userdata( $customer_id );
 			if ($user_data == false) {
+				// log an error 
+				$this->get_api()->log->add(
+					"graphflow", 
+					"Failed to get_userdata for id: " . $customer_id . " during capture_customer (historic=" . $historic . ")");					
 				return;
 			}
 			$customer_data = array(
@@ -552,6 +596,7 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 				if ( ! is_user_logged_in() ) {
 					$user_id = wp_generate_password( 32, false );
 					wc_setcookie( 'graphflow', $user_id, time() + ( 60 * 60 * 24 * 365 ) );
+					$_REQUEST['graphflow_req_id'] = $user_id;
 				}
 			}
 		}
@@ -563,7 +608,9 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 		public function get_temp_user_id() {
 			if ( ! isset( $_COOKIE['graphflow'] ) ) {
 				if ( ! is_user_logged_in() ) {
-					$user_id = wp_generate_password( 32, false );
+					//$user_id = wp_generate_password( 32, false );
+					//wc_setcookie( 'graphflow', $user_id, time() + ( 60 * 60 * 24 * 365 ) );
+					$user_id = $_REQUEST['graphflow_req_id'];
 				} else {
 					$user_id = get_current_user_id();
 				}

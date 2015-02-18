@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 if ( ! class_exists( 'WC_GraphFlow_API' ) ) {
 	class WC_GraphFlow_API {
+
 		/**
 		 * Production API endpoint
 		 * @var string
@@ -15,6 +16,8 @@ if ( ! class_exists( 'WC_GraphFlow_API' ) ) {
 		 * @since 1.0.0
 		 */
 		const PRODUCTION_ENDPOINT = 'https://api.graphflow.com/';
+
+		public $log;
 
 		/**
 		 * Endpoint to use for making calls
@@ -49,6 +52,7 @@ if ( ! class_exists( 'WC_GraphFlow_API' ) ) {
 			$this->client_key = $client_key;
 			$this->api_key = $api_key;
 			$this->endpoint = WC_GraphFlow_API::PRODUCTION_ENDPOINT;
+			$this->log = new WC_Logger();
 		}
 
 		/**
@@ -86,9 +90,15 @@ if ( ! class_exists( 'WC_GraphFlow_API' ) ) {
 			}
 
 			$response = wp_remote_request( $this->endpoint . $endpoint . $query_args, $args );
+			
+			$api_code = $response['response']['code'];
+			if ( $api_code != 200) {
+				$json_response = json_decode( $response['body'] );
+				$this->log->add("graphflow", "Received error code " . $api_code . " for API call " . $endpoint . "; Message: " . $json_response->message );
+			}
 
 			if ( is_wp_error( $response ) ) {
-				throw new Exception( $response );
+				throw new Exception( print_r( $response, true ) );
 			}
 
 			return $response;
@@ -297,7 +307,8 @@ if ( ! class_exists( 'WC_GraphFlow_API' ) ) {
 		}
 
 		public function test_auth() {
-			$response = $this->perform_request( '/user/1', json_encode( array() ), 'GET' );
+			$currency = get_woocommerce_currency();
+			$response = $this->perform_request( '/analytics/woocommerce/meta', json_encode( array( 'currency' => $currency) ), 'GET' );
 			if ( $response['response']['code'] != 401 ) {
 				return true;
 			} else {

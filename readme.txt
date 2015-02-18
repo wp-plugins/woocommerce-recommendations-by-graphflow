@@ -2,7 +2,7 @@
 Contributors: kloon, woothemes, mlnick, graphflow
 Tags: woocommerce, recommendations, products, users, analytics, customers, targeting, marketing
 Requires at least: 3.9
-Tested up to: 4.0.0
+Tested up to: 4.1.0
 Stable tag: 1.0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -164,6 +164,17 @@ Thank you! Please tell your friends. We also welcome all your feedback, good or 
 
 == Changelog ==
 
+= 1.0.7 =
+* Feature - Export store currency for Graphflow, allowing correct dashboard currency conversions.
+* Tweak - Add various error logging messages for API and data export errors, using WC_Logger.
+* Fix - Pass API error as correct string argument to Exception.
+* Fix - Check that product object exists before attempting to export product data.
+* Fix - Make product post-save hooks have correct priority.
+* Fix - Use correct attribute access to get 'itemId' for bulk product export.
+* Fix - Don't attempt to export product details for RSS feed requests.
+* Fix - Prevent generating multiple random temp user ids for a single request.
+* Fix - Products that should not be 'visible' marked as 'inactive'.
+
 = 1.0.6 =
 * Fix - Graphflow widget now has its own unique identifier. This fixes a conflict with built-in WooCommerce Product widget. After upgrading, users that are using the Graphflow widget should first delete it from the relevant widget area, and then add it again.
 
@@ -193,6 +204,9 @@ Thank you! Please tell your friends. We also welcome all your feedback, good or 
 * First release.
 
 == Upgrade Notice ==
+
+= 1.0.7 =
+* This release adds logging of errors to the WC Log, as well as a number of bug fixes.
 
 = 1.0.6 =
 * This release fixes an id conflict with the built-in WooCommerce Product widget, and we recommend upgrading.
