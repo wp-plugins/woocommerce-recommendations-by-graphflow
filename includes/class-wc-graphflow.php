@@ -278,6 +278,11 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 
 						$this->maybe_capture_product ( $order_item['product_id'] ); 
 
+						// timestamp in UTC
+						$time = new DateTime( $order->order_date );
+						$time->setTimezone( new DateTimeZone('UTC') );
+						$timestamp_utc = $time->getTimestamp() * 1000;
+
 						$graphflow_order_item = array(
 							'fromId' => $order_user,
 							'toId' => $order_item['product_id'],
@@ -291,7 +296,7 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 								'uaRaw' => $customer_user_agent,
 								'order_status' => $order_status,
 								),
-							'timestamp' => strtotime($order->order_date) * 1000
+							'timestamp' => $timestamp_utc
 						);
 						$products[] = $graphflow_order_item;
 					}
