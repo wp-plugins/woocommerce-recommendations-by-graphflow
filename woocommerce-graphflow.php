@@ -25,7 +25,7 @@ if ( ! function_exists( 'woothemes_queue_update' ) ) {
 /**
  * Plugin updates
  */
-woothemes_queue_update( plugin_basename( __FILE__ ), '7bf22a58d7f8281cbd07f7f68231b307', '524956' );
+//woothemes_queue_update( plugin_basename( __FILE__ ), '7bf22a58d7f8281cbd07f7f68231b307', '524956' );
 
 // Check if WooCommerce is active
 if ( ! is_woocommerce_active() )

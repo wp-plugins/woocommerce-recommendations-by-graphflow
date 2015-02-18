@@ -153,6 +153,10 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 					return;
 				}
 				global $product;
+				if ( ! $product ) {
+					$this->get_api()->log->add("graphflow", "Failed to capture product for request: " . $_SERVER['REQUEST_URI'] );
+					return;
+				}
 				$this->maybe_capture_product( $product->id );
 			}
 		}
@@ -180,7 +184,7 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 		public function maybe_capture_product( $product_id ) {
 			$product = get_product( $product_id );
 			if ( ! $product ) {
-				$this->get_api()->log->add("graphflow", "Failed to get_product for id: " . $product_id);
+				$this->get_api()->log->add("graphflow", "Failed to capture product id: " . $product_id ." for request: " . $_SERVER['REQUEST_URI'] );
 				return;
 			}
 			// Capture product if not already captured.
