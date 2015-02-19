@@ -153,6 +153,10 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 					return;
 				}
 				global $product;
+				if ( ! $product ) {
+					$this->get_api()->log->add("graphflow", "Failed to capture product for request: " . $_SERVER['REQUEST_URI'] );
+					return;
+				}
 				$this->maybe_capture_product( $product->id );
 			}
 		}
@@ -180,7 +184,7 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 		public function maybe_capture_product( $product_id ) {
 			$product = get_product( $product_id );
 			if ( ! $product ) {
-				$this->get_api()->log->add("graphflow", "Failed to get_product for id: " . $product_id);
+				$this->get_api()->log->add("graphflow", "Failed to capture product id: " . $product_id ." for request: " . $_SERVER['REQUEST_URI'] );
 				return;
 			}
 			// Capture product if not already captured.
@@ -278,6 +282,11 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 
 						$this->maybe_capture_product ( $order_item['product_id'] ); 
 
+						// timestamp in UTC
+						$time = new DateTime( $order->order_date );
+						$time->setTimezone( new DateTimeZone('UTC') );
+						$timestamp_utc = $time->getTimestamp() * 1000;
+
 						$graphflow_order_item = array(
 							'fromId' => $order_user,
 							'toId' => $order_item['product_id'],
@@ -291,7 +300,7 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 								'uaRaw' => $customer_user_agent,
 								'order_status' => $order_status,
 								),
-							'timestamp' => strtotime($order->order_date) * 1000
+							'timestamp' => $timestamp_utc
 						);
 						$products[] = $graphflow_order_item;
 					}
@@ -499,14 +508,17 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 		public function capture_customer( $customer_id, $historic = false ) {
 			$user_data = get_userdata( $customer_id );
 			if ($user_data == false) {
-				// log an error 
-				$this->get_api()->log->add(
-					"graphflow", 
-					"Failed to get_userdata for id: " . $customer_id . " during capture_customer (historic=" . $historic . ")");					
+				// log an error if not historic
+				if ( $historic == false ) {
+					$this->get_api()->log->add(
+						"graphflow", 
+						"Failed to get_userdata for id: " . $customer_id . " during capture_customer (historic=" . $historic . ")");
+				} 
 				return;
 			}
 			$customer_data = array(
-				'otherIds' => array( $this->get_temp_user_id() ),
+				// for 'otherIds' we only capture for real-time logins, which is done through alias call below
+				//'otherIds' => $array( $this->get_temp_user_id() ),
 				'userId' => $customer_id,
 				'userData' => array(
 					'name'			=> isset( $_POST['billing_first_name'] ) ? wc_clean( $_POST['billing_first_name'] ) . ' ' . wc_clean( $_POST['billing_last_name'] ) : $user_data->user_login,
@@ -528,7 +540,7 @@ if ( ! class_exists( 'WC_GraphFlow' ) ) {
 			update_usermeta( $customer_id, '_wc_graphflow_exported', 'yes' );
 
 			// Set alias for real-time customer registrations/updates, not for historical orders
-			if ($historic == false) {
+			if ( $historic == false ) {
 				$this->get_api()->add_user_alias( $customer_id, $this->get_temp_user_id() );
 			}
 		}
